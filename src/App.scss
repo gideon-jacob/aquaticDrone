@@ -1,0 +1,41 @@
+@use './sass/reset';
+@use './sass' as *;
+@use 'sass:color';
+
+#root {
+    background-color: color.adjust($color-1, $lightness: 10%);
+}
+
+.bg-container {
+    min-height: 100vh;
+    padding-top: 15vh;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $gap * 3;
+}
+
+.map-container {
+    height: 50vh;
+    width: 50%;
+
+    border-radius: $border-radius;
+    box-shadow: $box-shadow, 0 0 3rem 2rem $color-1;
+    overflow: hidden;
+}
+
+.btn {
+    background-color: $color-1;
+    color: $button-text-color;
+    font-weight: 500;
+
+    padding: $padding $padding * 2;
+    border-radius: $border-radius;
+    box-shadow: $box-shadow;
+    border: 1px solid $border-color;
+
+    &:active {
+        transform: scale(0.98);
+    }
+}

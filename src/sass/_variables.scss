@@ -1,0 +1,35 @@
+// Font Families
+$font-family: 'Roboto';
+
+// Colors
+$color-1: #ACD7FC;
+$color-2: #005DAB;
+
+$border-color: #005DAB;
+$button-text-color: #003366;
+
+/* Color Theme Swatches in Hex */
+.Primary-Color-Palette-1-hex { color: #005DAB; }
+.Primary-Color-Palette-2-hex { color: #DF4641; }
+.Primary-Color-Palette-3-hex { color: #ACD7FC; }
+.Primary-Color-Palette-4-hex { color: #003366; }
+.Primary-Color-Palette-5-hex { color: #F8BF00; }
+
+// base variables
+// The `box-shadow` property applies shadow effects to an element's box.
+// Syntax:
+// box-shadow: [horizontal-offset] [vertical-offset] [blur-radius] [spread-radius] [color];
+// - horizontal-offset: Required. Specifies the horizontal distance of the shadow. Positive values move the shadow to the right, negative to the left.
+// - vertical-offset: Required. Specifies the vertical distance of the shadow. Positive values move the shadow down, negative up.
+// - blur-radius: Optional. Defines the blur effect. The higher the value, the more blurred the shadow. Default is 0 (sharp shadow).
+// - spread-radius: Optional. Expands or contracts the shadow. Positive values expand, negative values contract. Default is 0.
+// - color: Optional. Specifies the color of the shadow. Default is the text color.
+// Example:
+// box-shadow: 10px 5px 5px 0px rgba(0, 0, 0, 0.5);
+$box-shadow: 0 10px 15px -3px rgb(0 0 0 / .1), 0 4px 6px -4px rgb(0 0 0 / .1);
+
+$font-size: 1rem;
+$border-radius: 2rem;
+$padding: 1rem;
+$margin: 1rem;
+$gap: 1rem;

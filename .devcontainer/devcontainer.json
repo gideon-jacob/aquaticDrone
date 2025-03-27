@@ -1,0 +1,59 @@
+{
+	"name": "aquaticDrone",
+
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
+	
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	"features": {
+		"ghcr.io/mikaello/devcontainer-features/modern-shell-utils:1": {},
+		"ghcr.io/devcontainers-extra/features/zsh-plugins:0": {
+			"plugins": "ssh-agent npm",
+			"omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions"
+		}
+	},
+
+	// Add the user's SSH key to the container
+	"mounts": [
+		"type=bind,source=${localEnv:HOME}/.ssh,target=/home/node/.ssh",
+		"type=bind,source=/mnt/wslg/runtime-dir/wayland-0,target=/tmp/vscode-wayland.sock",
+		"type=bind,source=${localEnv:HOME}/.config/ngrok,target=/home/node/.config/ngrok",
+		"type=bind,source=${localEnv:HOME}/.zsh_history,target=/home/node/.zsh_history"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [3000],
+	"remoteEnv": {
+		"API_URL": "http://localhost:8000"
+	},
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	"postCreateCommand": "npm install", 
+	
+	// Configure tool-specific properties.
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"mhutchie.git-graph",
+				"dsznajder.es7-react-js-snippets",
+				"sibiraj-s.vscode-scss-formatter",
+				"gencer.html-slim-scss-css-class-completion",
+				"viijay-kr.react-ts-css",
+				"Threespot.frontline-sass-snippets",
+				"formulahendry.auto-rename-tag",
+				"ExodiusStudios.comment-anchors",
+				"Jannchie.codetime",
+				"tonybaloney.vscode-pets",
+				"johnpapa.vscode-peacock",
+				"ms-vsliveshare.vsliveshare"
+			],
+			"settings": {
+				"editor.tabSize": 4,
+				"terminal.integrated.defaultProfile.linux": "zsh"
+			}
+		}
+	}
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root",
+}

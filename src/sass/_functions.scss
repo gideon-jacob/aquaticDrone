@@ -1,0 +1,14 @@
+@use 'sass:math';
+
+@function columns ($columns, $grid-columns-count: 12, $gutter: 20px) {
+    @if ($columns == $grid-columns-count) {
+        @return 100%;
+    }
+    
+    $column-width: calc((100% * #{$columns} - (#{$gutter} * (#{$columns} - 1))) / #{$grid-columns-count});
+    @return $column-width;
+}
+
+@function responsive-height($height) {
+    @return calc(var(--vh) * #{$height});
+}

@@ -25,6 +25,14 @@
     overflow: hidden;
 }
 
+.btn-container {
+    width: 50%;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .btn {
     background-color: $color-1;
     color: $button-text-color;
@@ -37,5 +45,11 @@
 
     &:active {
         transform: scale(0.98);
+    }
+
+    &[disabled] {
+        background-color: $color-2;
+        color: $color-1;
+        cursor: not-allowed;
     }
 }

@@ -396,7 +396,7 @@ function App() {
           color="#005DAB"
         />
       ) : (
-        <p>Progress: 48%</p>  
+        <span className='btn'>Progress: 48%</span>
       )}
     </div>
   )

@@ -43,6 +43,10 @@
     box-shadow: $box-shadow;
     border: 1px solid $border-color;
 
+    display: flex;
+    align-items: center;
+    gap: $gap;
+
     &:active {
         transform: scale(0.98);
     }
@@ -52,4 +56,8 @@
         color: $color-1;
         cursor: not-allowed;
     }
+}
+
+.icon {
+    font-size: $font-size;
 }

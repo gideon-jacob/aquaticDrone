@@ -27,6 +27,7 @@ import {
     paths: google.maps.LatLng[] | google.maps.LatLngLiteral[] | google.maps.MVCArray<google.maps.LatLng>;
     encodedPath?: string;
     strokeColor?: string;
+    strokeWeight?: number;
   };
   
   export type PolylineProps = google.maps.PolylineOptions &
@@ -74,7 +75,7 @@ import {
 
     useEffect(() => {
       const { strokeColor = 'black' } = props;
-      const strokeWeight = 12; // Increase stroke width
+      const { strokeWeight = 12 } = props; // Default stroke width to 12
       const strokeOpacity = 0.6; // Optional: Adjust stroke opacity
 
       polyline.setOptions({ 
@@ -82,7 +83,7 @@ import {
         strokeWeight, 
         strokeOpacity,
       });
-    }, [polyline, props, props.strokeColor]);
+    }, [polyline, props]);
   
     // create polyline instance and add to the map once the map is available
     useEffect(() => {

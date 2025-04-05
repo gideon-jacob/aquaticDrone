@@ -2,79 +2,152 @@
 @use './sass' as *;
 @use 'sass:color';
 
-#root {
-    background-color: color.adjust($color-1, $lightness: 10%);
+// #root {
+//     background-color: color.adjust($color-1, $lightness: 10%);
+// }
+
+%controls-elements {
+    position: absolute;
+    z-index: 3;
 }
 
 .bg-container {
+    position: relative;
     min-height: 100vh;
-    padding: 15vh 10vw;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: $gap * 3;
 }
 
-.map-container {
-    height: 50vh;
-    width: 100%;
-    
-    border-radius: $border-radius;
-    box-shadow: $box-shadow, 0 0 3rem 2rem $color-1;
-    overflow: hidden;
+.map-wrapper {
+    position: absolute;
+    z-index: 2;
 
-    @include lg {
-        height: 50vh;
-        width: 50%;
-    }
+    height: 100vh;
+    width: 100%;
 }
 
-.btn-container {
+.header-container {
+    $nav-height: 10vh;
+    @extend %controls-elements;
+
+    min-height: $nav-height;
     width: 100%;
+    padding: $padding $padding * 6;
+
+    background-image: linear-gradient(to right, #076709, #222220, #222220, #222220, #222220);
+    color: white;
 
     display: flex;
     flex-direction: row;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: $gap;
-    
-    @include lg {
-        width: 50%;
-        justify-content: space-between;
+    justify-content: flex-start;
+    align-items: center;
+
+    .seperator {
+        border: 1px solid #cccccc22;
+        width: 1px;
+        height: $nav-height * 0.5;
+        margin: 0 $margin;
     }
 }
 
-.btn {
-    background-color: $color-1;
-    color: $button-text-color;
-    font-weight: 500;
-
-    padding: $padding $padding * 2;
-    border-radius: $border-radius;
-    box-shadow: $box-shadow;
-    border: 1px solid $border-color;
-
+.info-container {
     display: flex;
-    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
     gap: $gap;
 
-    &:active {
-        transform: scale(0.98);
+    .icon {
+        font-size: 1.3rem;
     }
 
-    &[disabled] {
-        display: none;
+    .drone-status {
+        font-size: 1.5rem;
+    }
 
-        @include lg {
-            display: block;
-            background-color: $color-2;
-            color: $color-1;
-            cursor: not-allowed;
+    .signal-status{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .battery-status {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: $gap * 0.5;
+        
+        .battery-icon {
+            transform: rotate(90deg);
+        }
+
+        .battery-percentage-text {
+            font-size: 0.8rem;
         }
     }
 }
 
-.icon {
-    font-size: $font-size;
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: $gap;
+
+    .btn {
+        background-color: #e2e2e244;
+        color: white;
+        font-weight: 500;
+        font-size: 0.7rem;
+    
+        min-width: 50px;
+        padding: 8px;
+        border-radius: 8px;
+        border: none;
+    
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: $gap * 0.9;
+
+        transition: 0.2s ease;
+
+        &.selected {
+            background-color: white;
+            color: #555553;
+
+            &:hover {
+                transform: scale(1.03);
+            }
+        }
+    
+        &:hover {
+            transition: 0.2s ease;
+            transform: scale(1.05);
+        }
+    
+        &[disabled] {
+            color: #ffffff55;
+            cursor: not-allowed;
+
+            &:hover {
+                transform: scale(1);
+            }
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+    }
+}
+
+
+.loader-container {
+    background-color: #00000088;
+    height: 100vh;
+    width: 100%;
+    
+    position: absolute;
+    z-index: 4;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }

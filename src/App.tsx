@@ -5,12 +5,20 @@ import type { MapCameraChangedEvent, MapMouseEvent } from '@vis.gl/react-google-
 import { Polygon } from './components/Polygon';
 import { Polyline } from './components/Polyline';
 
-import { GrUndo as UndoIcon } from "react-icons/gr";
 import { Circles as LoaderSpinner } from 'react-loader-spinner';
+import { IoSend as SendIcon } from "react-icons/io5";
+import { GrUndo as UndoIcon } from "react-icons/gr";
+import { FaSignal as SignalIcon } from "react-icons/fa";
+import { GiBattery75 as BatteryIcon } from "react-icons/gi";
+import { FaRoute as PlanIcon } from "react-icons/fa6";
+import { BsBoxArrowInDown as ReturnIcon } from "react-icons/bs";
+import { GiPauseButton as PauseIcon } from "react-icons/gi";
+import { FaPlay as PlayIcon } from "react-icons/fa";
 
 import './App.scss'
+import { useEffect } from 'react';
 
-const polylinePath = [
+const initialPolylinePath = [
   {
       "lat": 12.999047907183801,
       "lng": 80.27334355403984
@@ -245,43 +253,91 @@ const polylinePath = [
   }
 ]
 
+const initialResponse = {
+  droneLocation: {
+    lat: 12.999290306806886,
+    lng: 80.27369224120666
+  },
+  currentState: "Onboard",
+  batteryPercentage: 75,
+  droneDirection: 270
+}
+
 function App() {
-  const dronePosition = { lat: 12.999290306806886, lng: 80.27369224120666 };
-  const [viewPortPosition, setViewPortPosition] = useState(dronePosition);
+  // const dronePosition = initialResponse.droneLocation;
+  const [droneLocation, setDroneLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [droneState, setDroneState] = useState<string>('');
+  const [droneDirection, setDroneDirection] = useState<number | null>(0);
+  const [dronePath, setDronePath] = useState<{ lat: number; lng: number }[]>([]);
+  const [droneBattery, setDroneBattery] = useState<number>(initialResponse.batteryPercentage);
+
+  const [viewPortPosition, setViewPortPosition] = useState<{ lat: number; lng: number } | null>(droneLocation);
   const [boundaryList, setBoundaryList] = useState<{ lat: number; lng: number }[]>([]);
   const [zoom, setZoom] = useState(19);
 
-  const [isFinalized, setIsFinalized] = useState(false);
-  const [isSent, setIsSent] = useState(false);
   const [isConnectionEstablished, setIsConnectionEstablished] = useState(false);
+  const [isSetBoundary, setIsSetBoundary] = useState(false);
+  const [isSent, setIsSent] = useState(false);
+  const [isBoundarySetSuccessful, setIsBoundarySetSuccessful] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [isDroneReturning, setIsDroneReturning] = useState(false);
 
   const [color1, color2, color3] = ['#005DAB', '#003366', '#DF4641'];
 
-  const handleZoomChanged = (event: MapCameraChangedEvent) => {
+  useEffect(() => {
+    // ComponentDidMount equivalent logic here
+    setTimeout(() => {
+      setIsConnectionEstablished(true);
+      setDroneState(initialResponse.currentState);
+      setDroneLocation(initialResponse.droneLocation);
+      setDroneDirection(initialResponse.droneDirection);
+      setDroneBattery(initialResponse.batteryPercentage);
+      setViewPortPosition(initialResponse.droneLocation);
+    }, 3000);
+
+    const intervalId = setInterval(() => {
+      if (!isBoundarySetSuccessful) return;
+      if (isPaused) return;
+      
+      const newLocation = initialPolylinePath.pop();
+      if (newLocation) {
+        setDroneLocation(newLocation);
+        setDronePath((prev) => [...prev, newLocation]);
+      }
+    }, 1000);
+
+    // Cleanup function (optional, for ComponentWillUnmount equivalent)
+    return () => {
+      clearInterval(intervalId);
+      console.log('Component unmounted');
+    };
+  }, [isBoundarySetSuccessful, isPaused]);
+
+  const handleMapZoomChanged = (event: MapCameraChangedEvent) => {
     const newZoom = event.map.getZoom();
     if (newZoom) setZoom(newZoom);
   }
 
-  const handleCenterChanged = (event: MapCameraChangedEvent) => {
+  const handleMapCenterChanged = (event: MapCameraChangedEvent) => {
     const center = event.map.getCenter();
     if (center) setViewPortPosition({ lat: center.lat(), lng: center.lng() });
   }
 
-  const handleClick = (event: MapMouseEvent) => {
+  const handleMapClick = (event: MapMouseEvent) => {
     const lat = event.detail.latLng?.lat;
     const lng = event.detail.latLng?.lng;
 
     if (lat && lng) setBoundaryList((prev) => [...prev, { lat, lng }]);
   }
 
-  const handlePolygonClick = (event: google.maps.MapMouseEvent) => {
+  const handlePolygonBoundaryClick = (event: google.maps.MapMouseEvent) => {
     const lat = event.latLng?.lat();
     const lng = event.latLng?.lng();
 
     if (lat && lng) setBoundaryList((prev) => [...prev, { lat, lng }]);
   }
 
-  const handleDrag = (index: number, event: google.maps.MapMouseEvent) => {
+  const handleBoundaryDrag = (index: number, event: google.maps.MapMouseEvent) => {
     const lat = event.latLng?.lat();
     const lng = event.latLng?.lng();
     
@@ -294,15 +350,17 @@ function App() {
     }
   }
 
-  const handleFinalize = () => {
-    if (boundaryList.length < 3) {
-      alert('Please select at least 3 points to create a polygon.');
-      return;
-    }
-
-    setIsFinalized((prev) => !prev);
+  const handleSend = () => {
+    setIsSent(true);
+    setTimeout(() => {
+      setIsSetBoundary(false);
+      setIsBoundarySetSuccessful(true);
+      initialResponse.currentState = 'Offboard';
+      setDroneState(initialResponse.currentState);
+    }, 3000);
+    console.log(boundaryList);
   }
-
+  
   const handleUndo = () => {
     setBoundaryList((prev) => {
       const newList = [...prev];
@@ -311,92 +369,170 @@ function App() {
     });
   }
 
-  const handleSend = () => {
-    setIsSent(true);
-    setTimeout(() => setIsConnectionEstablished(true), 3000);
-    console.log(boundaryList);
+  const handleDronePause = () => {
+    setIsPaused(true);
+  }
+
+  const handleDroneAction = () => {
+    setIsPaused(false);
+  }
+
+  const handleDroneReturn = () => {
+    setIsDroneReturning(true);
+    setDroneState('Returning');
+
+    setTimeout(() => {
+      setIsDroneReturning(false);
+      setIsBoundarySetSuccessful(false);
+      setIsSent(false);
+      setIsPaused(false);
+      setIsSetBoundary(false);
+      setBoundaryList([]);
+      setDronePath((prev) => {
+        initialPolylinePath.push(...prev);
+        return [];
+      });
+    }, 5000);
+  }
+
+  const renderDroneStatus = () => {
+    if (isConnectionEstablished) {
+      return (isDroneReturning) ? 'Returning...' : droneState;
+    } else {
+      return 'Connecting...';
+    }
   }
 
   return (
-    <div className="bg-container">
-      <div className='map-container' >
-        <Map
-          zoom={zoom}
-          center={viewPortPosition}
-          mapTypeId='satellite'
-          mapId={import.meta.env.VITE_PUBLIC_MAP_ID}
-        
-          disableDefaultUI={true}
-          zoomControl={true}
-        
-          onZoomChanged={handleZoomChanged}
-          onCenterChanged={handleCenterChanged}
-          {...isFinalized ? {} : { onClick: handleClick }}
-        >
-          <AdvancedMarker position={dronePosition}></AdvancedMarker>
-          <Polygon
-            fillColor={color1}
-            strokeColor={color2}
-            paths={boundaryList}
-            {...isFinalized ? {} : { onClick: handlePolygonClick }}
-          />
+    <div className='bg-container'>
+      {isConnectionEstablished && (
+        <div className='map-wrapper' >
+          <Map
+            zoom={zoom}
+            center={viewPortPosition}
+            disableDefaultUI={true}
+            mapTypeId='satellite'
+            mapId={import.meta.env.VITE_PUBLIC_MAP_ID}
+          
+            onZoomChanged={handleMapZoomChanged}
+            onCenterChanged={handleMapCenterChanged}
+            {...isSetBoundary ? { onClick: handleMapClick } : {}}
+          >
+            <AdvancedMarker position={droneLocation}></AdvancedMarker>
 
-          {boundaryList.map((boundary, index) => (
-            <AdvancedMarker
-              key={index}
-              position={boundary}
-              draggable={!isFinalized}
-              {...isFinalized ? {} : { onDrag: (event) => handleDrag(index, event) }}
-            >
-              <Pin
-                background={'transparent'}
-                borderColor={color1}
-                glyph={'🔵'}
-                glyphColor={color2}
-                scale={0.6}
-              />
-            </AdvancedMarker>
-          ))}
+            <Polygon
+              fillColor={color1}
+              strokeColor={color2}
+              paths={boundaryList}
+              {...isSetBoundary ? { onClick: handlePolygonBoundaryClick } : {}}
+            />
 
-          {isSent && isConnectionEstablished && (
-            <Polyline paths={polylinePath} strokeColor={color3} />
-          )}
-        </Map>
-      </div>
+            {boundaryList.map((boundary, index) => (
+              <AdvancedMarker
+                key={index}
+                position={boundary}
+                draggable={isSetBoundary}
+                {...isSetBoundary ? { onDrag: (event) => handleBoundaryDrag(index, event) } : {}}
+              >
+                <Pin
+                  background={'transparent'}
+                  borderColor={color1}
+                  glyph={'🔵'}
+                  glyphColor={color2}
+                  scale={0.6}
+                />
+              </AdvancedMarker>
+            ))}
 
-      {!isSent ? (
-        <div className='btn-container'>
-          <div style={{ display: 'flex', gap: '10px' }}>
-            <button type='button' className='btn' onClick={handleFinalize} disabled={isSent}>
-              {isFinalized ? 'Edit Boundary' : 'Finalize Boundary'}
-            </button>
-
-            {isFinalized && (
-              <button type='button' className='btn' onClick={handleSend} disabled={isSent}>
-                Send
-              </button>
+            {isSent && isBoundarySetSuccessful && (
+              <Polyline paths={dronePath} strokeColor={color3} />
             )}
-          </div>
+          </Map>
+        </div>
+      )}
 
+      <header className='header-container'>
+        <div className='info-container'>
+          <span className='drone-status'>
+            {renderDroneStatus()}
+          </span>
+          <span className='signal-status'>
+            <SignalIcon className='icon' />
+          </span>
+          <span className='battery-status'>
+            <BatteryIcon className='icon battery-icon' />
+            <span className='battery-percentage-text'>{droneBattery}%</span>
+          </span>
+        </div>
+
+        <hr className='seperator' />
+
+        <div className='btn-container'>
+          <button
+            type='button'
+            className={`btn ${(isSetBoundary && !isBoundarySetSuccessful) ? 'selected' : ''}`}
+            onClick={() => setIsSetBoundary(prev => !prev)}
+            disabled={isBoundarySetSuccessful}
+          >
+            <PlanIcon className='icon' />
+            Plan
+          </button>
+          
           <button
             type='button'
             className='btn'
-            onClick={handleUndo}
-            disabled={isFinalized}
-            title="Undo"
+            onClick={handleDroneReturn}
+            disabled={!isBoundarySetSuccessful || !isPaused}
           >
-            <UndoIcon className='icon' />
+            <ReturnIcon style={{ strokeWidth: 0.8, scale: 1.05 }} className='icon' />
+            Return
+          </button>
+          
+          <button
+            type='button'
+            className='btn'
+            onClick={handleDronePause}
+            disabled={!isBoundarySetSuccessful || isPaused}
+          >
+            <PauseIcon className='icon' />
+            Pause
+          </button>
+          
+          <button
+            type='button'
+            className='btn'
+            onClick={handleDroneAction}
+            disabled={!isBoundarySetSuccessful || !isPaused}
+          >
+            <PlayIcon style={{ scale: 0.9 }} className='icon' />
+            Action
           </button>
         </div>
-      ) : !isConnectionEstablished ? (
-        <LoaderSpinner
-          visible={isSent && !isConnectionEstablished}
-          height={55}
-          width={55}
-          color="#005DAB"
-        />
-      ) : (
-        <span className='btn'>Progress: 48%</span>
+
+        {isSetBoundary && !isBoundarySetSuccessful && (
+          <>
+              <hr className='seperator' /> 
+
+              <div className='btn-container'>
+                <button type='button' className='btn' onClick={handleSend}>
+                  <SendIcon className='icon' /> Send
+                </button>
+                <button type='button' className='btn' onClick={handleUndo}>
+                  <UndoIcon style={{ strokeWidth: 0.9, scale: 1.05 }} className='icon' /> Undo
+                </button>
+              </div>  
+          </>
+        )}      
+      </header>
+
+      {(isSent && !isBoundarySetSuccessful || !isConnectionEstablished)  && (
+        <div className='loader-container'>
+            <LoaderSpinner
+              height={55}
+              width={55}
+              color="#005DAB"
+            />
+        </div>
       )}
     </div>
   )

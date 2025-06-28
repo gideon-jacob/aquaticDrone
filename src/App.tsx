@@ -260,14 +260,14 @@ const initialResponse = {
   },
   currentState: "Onboard",
   batteryPercentage: 75,
-  droneDirection: 270
+  // droneDirection: 270
 }
 
 function App() {
   // const dronePosition = initialResponse.droneLocation;
   const [droneLocation, setDroneLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [droneState, setDroneState] = useState<string>('');
-  const [droneDirection, setDroneDirection] = useState<number | null>(0);
+  // const [droneDirection, setDroneDirection] = useState<number | null>(0);
   const [dronePath, setDronePath] = useState<{ lat: number; lng: number }[]>([]);
   const [droneBattery, setDroneBattery] = useState<number>(initialResponse.batteryPercentage);
 
@@ -290,7 +290,7 @@ function App() {
       setIsConnectionEstablished(true);
       setDroneState(initialResponse.currentState);
       setDroneLocation(initialResponse.droneLocation);
-      setDroneDirection(initialResponse.droneDirection);
+      // setDroneDirection(initialResponse.droneDirection);
       setDroneBattery(initialResponse.batteryPercentage);
       setViewPortPosition(initialResponse.droneLocation);
     }, 3000);

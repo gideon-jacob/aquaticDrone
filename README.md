@@ -1,54 +1,18 @@
-# React + TypeScript + Vite
+# Marine Drone Mission Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This project is a prototype of a web-based command and control interface for unmanned aquatic vehicles (UAVs). It addresses the core requirements of mission planning and safety oversight through a user-friendly dashboard.
 
-Currently, two official plugins are available:
+## Key Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Boundary Mapping
+Allows operators to visually define and set restricted operational zones (geofencing) to prevent the drone from entering unsafe or unauthorized areas.
 
-## Expanding the ESLint configuration
+### Mission Path Planning
+Enables the creation of precise mission paths using waypoints, with real-time tracking of the drone's position and progress.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Emergency Return-to-Base (RTB)
+Implements a critical, one-click fail-safe that immediately commands the drone to abort its current task and navigate back to its designated home station.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Project Overview
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+This interface serves as a robust proof-of-concept for a scalable and reliable system for managing aquatic drone operations.
